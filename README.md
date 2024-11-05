@@ -1,3 +1,4 @@
+gdb tips for nx via yuzu GDBstub 
 ```
 0.   ln -s .gdbinit_arm64 ~/.gdbinit
 1.   for yuzu enable for debug first 
