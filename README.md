@@ -10,4 +10,5 @@ gdb tips for nx via yuzu GDBstub
 7.   (gdb) u        (dissassemble info with $pc) 
 ```     
  ![nxgdb](./png/nxgdb01.png)        
-     
+ [gdbida credit to Comsecuris](https://github.com/Comsecuris/gdbida)
+ [more information for switch modding cheatsheet](https://gist.github.com/jam1garner/c9ba6c0cff150f1a2480d0c18ff05e33)
