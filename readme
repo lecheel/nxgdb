@@ -1,0 +1,3 @@
+pip install keystone keystone-engine
+pip install capstone
+pip install rich mqtt-paho zmq

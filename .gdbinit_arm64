@@ -1,0 +1,393 @@
+define my_bt
+  set $frame = $fp
+  set $prev_frame = 0
+  while $frame != 0 && $prev_frame != $frame
+      set $prev_frame = $frame
+      p/x ((unsigned long long *)$frame)[1]
+      set $frame = ((unsigned long long *)$frame)[0]
+  end
+end
+
+define connect 
+  target extended-remote 192.168.31.56:22225
+  monitor wait 0x010055201822E000
+end
+
+define yuzu
+  target extended-remote 192.168.31.73:6543
+  #monitor wait 
+end 
+
+define qconnect
+  target extended-remote 192.168.31.56:22225
+  attach 0x86
+  monitor get info
+end
+
+define gn 
+  if $argc > 0
+    python gn_break($arg0)   
+  else
+    print("gn <hex> | <num>")
+  end
+end 
+
+# _____________breakpoint aliases_____________
+define bpl
+    info breakpoints
+end
+document bpl
+Syntax: bpl
+| List all breakpoints.
+end
+
+define nop
+    python nop()
+end
+
+define bb 
+  if $argc > 0
+    b *$main+0x$arg0
+  else 
+      printf "set b *$main+0xXXX\n"
+  end
+end
+
+define cheat 
+    if $initOK>0
+        if $argc > 0
+            python cheat_from_file($arg0)
+        else
+            python cheat_from_file()
+        #x/1i $cheat_addr
+        #set {unsigned int} $cheat_addr = $cheat_code
+        #x/1i $cheat_addr
+        end
+    end
+end
+
+define ni
+  python nexti_with_track()
+  end
+
+define ida
+    set $arg = $arg0
+    p/x $arg - $main
+end
+
+define idaconnect
+  source ~/gdb/gdbida.py 
+  idabridge 192.168.31.73:2305
+end
+
+define idadisconnect
+  idabridge disconnect
+end
+
+define asm 
+  python asm_arm64($arg0)
+  end
+
+define qinfo
+  monitor get info
+end
+
+define bmark
+    if $argc > 0
+        python bmark($arg0)
+    end
+end 
+
+define blist
+    python bmark("")
+end 
+
+define mbp
+    if $argc > 0
+        awatch *(int*) $arg0
+    end 
+end 
+
+define go
+    if $argc > 0
+        python go_break_here($arg0)   
+    else
+        print("go <address>")
+    end
+end
+
+define gx 
+    if $argc > 0
+        python go_break_X("$arg0")   
+    else
+        print("gx ida <offset>")
+    end
+end 
+
+define wbp 
+    if $initOK>0
+        if $argc > 1
+            set $regs=$arg1
+            set $addr=$arg0 
+            #print($addr)
+            #print($regs)
+            python wbp_wrapper()
+        else
+            print("wbp <addr> '<register>'")
+        end
+    else
+        print("init $main first")
+    end
+end
+
+define opfind
+
+        if $argc > 0
+            set $opfind=$arg0
+            source ~/gdb/aob.py
+            #python opfind_wrapper()
+        else
+            print("opfind '000123 45')
+        end
+end 
+
+
+define aob 
+    if $initOK>0
+        if $argc > 0
+            set $opfind=$arg0
+            source ~/gdb/aob_heap.py
+        else
+            print("aob '000123 45')
+        end
+    else
+        print("init $main first for aob")
+    end
+end
+
+define codecave
+    if $initOK>0
+        python search_codecave_addr()
+    else
+        print("init $main first codecave")
+    end
+end
+
+
+define opcode
+    if $initOK>0
+        if $argc > 1
+            set $addr=$arg0 
+            set $opcode=$arg1
+            python opcode_wapper()
+        else
+            print("opcode <addr> <0x1f2003d5>")
+        end
+    else
+        print ("init $main first")
+    end
+end
+
+define pk
+    python remarks()
+end
+
+define ce 
+  if $argc > 1 
+      set $ce_mem=$arg0
+      set $ce_offset=$arg1
+      source ~/gdb/ce.py 
+  else
+      print("ce <address> <offset>")    
+  end 
+end
+
+define diy
+  source ~/gdb/diy.py
+end 
+
+define qq 
+  source ~/gdb/qhelp.py
+end
+
+define U 
+   set $start = $pc-0x30
+   set $end = $pc+0x30 
+   disassemble /r $start, $end
+end 
+
+define ux
+    if $argc == 0
+        set $start = $pc-0x10
+        set $end = $pc+0x40 
+        disassemble /r $start, $end
+        set $nasm=$end
+
+    else
+    # Take the first argument as the starting address
+        set $start = $arg0
+        # Calculate the ending address (example: disassemble 0x20 bytes)
+        set $end = $start + 0x40
+        # Disassemble the range
+        disassemble /r $start, $end
+        set $nasm=$end
+    end 
+end
+
+define u
+    python asm_next()
+end 
+
+
+define save_pc
+    python save_pc()
+end 
+
+define undo_pc
+    python undo_pc()
+end
+
+define rem 
+    if $argc > 0
+        python rem_asm($arg0)
+    end
+    if $argc == 0
+        print("rem 'msg' <-- $pc")
+    end
+end
+
+define unext 
+    set $start = $nasm
+    set $end = $start+0x50 
+    disassemble /r $start, $end
+    set $nasm=$end
+end
+
+define uprev
+    set $start = $nasm-0x100
+    set $end = $start+0x50 
+    disassemble /r $start, $end
+    set $nasm=$end
+end 
+
+define kk 
+    source ~/gdb/cheat.py 
+    set $initOK = 0x1
+end
+
+define cls 
+    shell clear
+end 
+
+define ui
+    if $tuiOK==0
+        tui enable
+        set $tuiOK=1 
+        layout asm
+    else
+        tui disable
+        set $tuiOK=0
+
+    end
+end 
+
+define xx 
+   printf "source hex.py \n"
+   source ~/gdb/hex.py 
+end 
+
+define lscheat 
+  if $initOK>0
+    if $argc > 0
+      python asm_from_cheat($arg0)
+    else
+      python cheat_from_file()
+      python import_cheat()
+    end
+  end
+end
+
+define v 
+    if $argc == 0
+        set $arg0 = $pc
+    end
+    #x/16xb $arg0
+    x/32w $arg0
+end
+
+define dd 
+    if $argc > 0
+        printf "dump binary memory ./tmp/$arg0 $dmem \n"
+        dump  binary memory ./tmp/$arg0 $dmem  $dmem+0x2000
+    else
+        printf "dump binary memory ./tmp/$dmem $dmem \n"
+    end
+end 
+
+
+define uasm
+    if $argc == 0
+        disassemble
+    end
+    if $argc == 1
+        disassemble $arg0
+    end
+    if $argc == 2
+        disassemble $arg0 $arg1
+    end 
+    if $argc > 2
+        help uasm
+    end
+end
+document uasm
+Disassemble a specified section of memory.
+Default is to disassemble the function surrounding the PC (program counter)
+of selected frame. With one argument, ADDR1, the function surrounding this
+address is dumped. Two arguments are taken as a range of memory to dump.
+Usage: uasm <ADDR1> <ADDR2>
+end
+
+define nn
+    disassemble /r $pc-0x4, $pc+0x8
+    nexti
+end
+
+define pp 
+    source ~/gdb/pp.py 
+end
+
+define ll 
+    python asm_next()
+end 
+
+define lL
+    python asm_prev()
+end 
+
+define mm 
+    set $main=0x80004000
+end
+
+define master_code
+    source ~/gdb/master_code.py 
+end
+
+define ops 
+    if $argc > 0
+        python ops($arg0)
+    else
+        print("ops '<instruction>')
+    end
+end
+
+#alias dis=disable 
+#alias en=enable
+alias map=source ~/gdb/aob_heap.py
+set $initOK=0x0
+set $tuiOK=0
+set pagination off
+set history remove-duplicates unlimited
+#set  disassemble-next-line on
+#show disassemble-next-line
+#source ~/.gef-2024.06.py
+source ~/gdb/ops.py
