@@ -7,3 +7,6 @@
 4.1  CTRL-C 
 5.   (gdb) kk       (monitor get info for nro main address)
 7.   (gdb) u        (dissassemble info with $pc) 
+     
+ ![nxgdb](./png/nxgdb01.png)        
+     
