@@ -9,7 +9,10 @@ gdb tips for nx via yuzu GDBstub
 5.   (gdb) kk       (monitor get info for nro main address)
 7.   (gdb) u        (dissassemble info with $pc) 
 ```     
- ![nxgdb](./png/nxgdb01.png)        
+ ![nxgdb1](./png/nxgdb01.png)        
+ ![nxgdb2](./png/nxgdb02.png)        
+ ![nxgdb3](./png/nxgdb03.png)     
+ 
  
 [gdbida credit to Comsecuris](https://github.com/Comsecuris/gdbida)
 
