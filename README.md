@@ -12,6 +12,10 @@ gdb tips for nx via yuzu GDBstub
  ![nxgdb1](./png/nxgdb01.png)        
  ![nxgdb2](./png/nxgdb02.png)        
  ![nxgdb3](./png/nxgdb03.png)     
+
+![nxgdb_dec](./png/nxgdb04.png)     
+![nxgdb_asm](./png/nxgdb05.png)     
+ 
  
  
 [gdbida credit to Comsecuris](https://github.com/Comsecuris/gdbida)
